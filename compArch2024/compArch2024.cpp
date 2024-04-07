@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <stdio.h>
+//#include <bits/stdc++.h>
+#include <math.h>
 
 using namespace std;
 
@@ -74,21 +76,124 @@ int main(int argc, char* argv[])
             cout << "Error! -f is missing for file.";
             break;
         }
-        else {
-            //cout << cacheSize << "\t" << blockSize << "\t" << associativity << "\t" << replacement << "\t" << physicalMem << "\t" << percentage << "\t" << instruction << "\t" << traceFile;
-    cout << "Cache Simulator - CS 3853 - Group 15\n\n";
-    cout << "Trace files:\n\t" << trace1 << "\n\n" /*<< argv[18] << "\n\t" << argv[20] << "\n\n"*/;
-    cout << "***** Input Parameters *****\n\t";
-    cout << "Cache Size:\t\t\t" << cacheSize << "\n\t" << "block Size:\t\t\t" << blockSize << "\n\t"
-        << "associativity:\t\t\t" << associativity << "\n\t" << "replacement policy:\t\t" << replacement << "\n\t"
-        << "Physical Memory:\t\t" << physicalMem << "\n\t" << "Percent memory used by system:\t" << physicalMemPercent << "\n\t"
-        << "Instructions / Time Slice:\t" << timeSlice << "\n";
 
-            break;
-        }
+        else {
+            if ((cacheSize & (cacheSize - 1)) != 0) {
+                cout << "\nWarning: Cache Size is not a power of 2\nClosing program.\n";
+
+            }
+            else if (cacheSize == 1 || cacheSize <= 0) {
+                cout << "\nWarning: Cache Size cannot be of value 1 or lower\nClosing program.\n";
+
+            }
+            else {
+                int logged = log2(cacheSize);
+                logged += 10;
+                int power = pow(2, logged);
+
+                if (power < pow(2, 13) || power > pow(2, 23)) {
+                    cout << "\nWarning: Cache Size is not within the range of 2^13 - 2^23\nClosing program.\n";
+                    break;
+                }
+                else {
+                    cout << power << "\nyipee!\n\n";
+                }
+            }
+
+            if ((blockSize & (blockSize - 1)) != 0) {
+                cout << "\nWarning: block Size is not a power of 2\nClosing program.\n";
+                break;
+            }
+            else if (blockSize == 1 || blockSize <= 0) {
+                cout << "\nWarning: block Size cannot be of value 1 or lower\nClosing program.\n";
+                break;
+            }
+            else {
+                if (blockSize < pow(2, 3) || blockSize > pow(2, 6)) {
+                    cout << "\nWarning: block Size is not within the range of 2^3 - 2^6\nClosing program.\n";
+                    break;
+                }
+                else {
+                    cout << blockSize << "\nyipee!\n\n";
+                }
+            }
+
+            if (associativity != 1 && associativity != 2 && associativity != 4 && associativity != 8 && associativity != 16) {
+                cout << "\nWarning: associativity must be the following options: 1, 2, 4, 8, 16\nClosing program.\n";
+                break;
+            }
+            else {
+                cout << associativity << "\nyipee!\n\n";
+            }
+
+            if (replacement != "RR") {
+                cout << "\nError: please type in RR for replacement policy\nClosing program.\n";
+            }
+            else {
+                cout << replacement << "\nyipee!\n\n";
+            }
+
+            if ((physicalMem & (physicalMem - 1)) != 0) {
+                cout << "\nWarning: Cache Size is not a power of 2\nClosing program.\n";
+            }
+            else if (physicalMem == 1 || physicalMem <= 0) {
+                cout << "\nWarning: Cache Size cannot be of value 1 or lower\nClosing program.\n";
+            }
+            else {
+                int logged = log2(physicalMem);
+                logged += 10;
+                int power = pow(2, logged);
+
+                if (power < pow(2, 20) || power > pow(2, 32)) {
+                    cout << power << "\n";
+                    cout << "\nWarning: Cache Size is not within the range of 2^20 - 2^32\nClosing program.\n";
+                    break;
+                }
+                else {
+                    cout << "\n" << power;
+                    cout << "\nyipee!\n\n";
+                }
+
+
+            }
+
+            if (physicalMemPercent < 0 || physicalMemPercent > 100) {
+                cout << "Error! percentage must range from 0% - 100%\nClosing program";
+                break;
+            }
+            else {
+                cout << physicalMemPercent;
+                cout << "\nyipee!\n\n";
+            }
+
+            if (timeSlice == 0) {
+                cout << timeSlice;
+                cout << "\nyipee!\n\n";
+            }
+            else if (timeSlice == -1) {
+                timeSlice = 100;
+                cout << timeSlice;
+                cout << "\nyipee!\n\n";
+            }
+            else {
+                cout << "Error! instruction/time slice must either be 0 or -1 (max)\nClosing program";
+                break;
+            }
+        }     
+
+        //cout << cacheSize << "\t" << blockSize << "\t" << associativity << "\t" << replacement << "\t" << physicalMem << "\t" << percentage << "\t" << instruction << "\t" << traceFile;
+        cout << "Cache Simulator - CS 3853 - Group 15\n\n";
+        cout << "Trace files:\n\t" << trace1 << "\n\n" /*<< argv[18] << "\n\t" << argv[20] << "\n\n"*/;
+        cout << "***** Input Parameters *****\n\t";
+        cout << "Cache Size:\t\t\t" << cacheSize << " KB\n\t" << "block Size:\t\t\t" << blockSize << " Bytes\n\t"
+             << "associativity:\t\t\t" << associativity << "\n\t" << "replacement policy:\t\t" << replacement << "\n\t"
+             << "Physical Memory:\t\t" << physicalMem << " MB\n\t" << "Percent memory used by system:\t" << physicalMemPercent << "\n\t"
+             << "Instructions / Time Slice:\t" << timeSlice << "\n";
+
+        return false;
+
     }
 
-    
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
