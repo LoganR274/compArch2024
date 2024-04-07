@@ -3,10 +3,20 @@
 
 #include <iostream>
 #include <stdio.h>
-//#include <bits/stdc++.h>
 #include <math.h>
+#include <iomanip> 
 
 using namespace std;
+
+int cacheValue(int cacheSize) {
+    int logged = log2(cacheSize);
+    logged += 10;
+    int cachePower = pow(2, logged);
+
+    return cachePower;
+}
+
+
 
 int main(int argc, char* argv[])
 {
@@ -87,16 +97,14 @@ int main(int argc, char* argv[])
 
             }
             else {
-                int logged = log2(cacheSize);
-                logged += 10;
-                int power = pow(2, logged);
+                int returnCache = cacheValue(cacheSize);
 
-                if (power < pow(2, 13) || power > pow(2, 23)) {
+                if (returnCache < pow(2, 13) || returnCache > pow(2, 23)) {
                     cout << "\nWarning: Cache Size is not within the range of 2^13 - 2^23\nClosing program.\n";
                     break;
                 }
                 else {
-                    cout << power << "\nyipee!\n\n";
+                    cout << returnCache << "\nyipee!\n\n";
                 }
             }
 
@@ -142,15 +150,15 @@ int main(int argc, char* argv[])
             else {
                 int logged = log2(physicalMem);
                 logged += 10;
-                int power = pow(2, logged);
+                int memPower = pow(2, logged);
 
-                if (power < pow(2, 20) || power > pow(2, 32)) {
-                    cout << power << "\n";
+                if (memPower < pow(2, 20) || memPower > pow(2, 32)) {
+                    cout << memPower << "\n";
                     cout << "\nWarning: Cache Size is not within the range of 2^20 - 2^32\nClosing program.\n";
                     break;
                 }
                 else {
-                    cout << "\n" << power;
+                    cout << "\n" << memPower;
                     cout << "\nyipee!\n\n";
                 }
 
@@ -179,20 +187,76 @@ int main(int argc, char* argv[])
                 cout << "Error! instruction/time slice must either be 0 or -1 (max)\nClosing program";
                 break;
             }
-        }     
+        }
 
         //cout << cacheSize << "\t" << blockSize << "\t" << associativity << "\t" << replacement << "\t" << physicalMem << "\t" << percentage << "\t" << instruction << "\t" << traceFile;
         cout << "Cache Simulator - CS 3853 - Group 15\n\n";
         cout << "Trace files:\n\t" << trace1 << "\n\n" /*<< argv[18] << "\n\t" << argv[20] << "\n\n"*/;
         cout << "***** Input Parameters *****\n\t";
         cout << "Cache Size:\t\t\t" << cacheSize << " KB\n\t" << "block Size:\t\t\t" << blockSize << " Bytes\n\t"
-             << "associativity:\t\t\t" << associativity << "\n\t" << "replacement policy:\t\t" << replacement << "\n\t"
-             << "Physical Memory:\t\t" << physicalMem << " MB\n\t" << "Percent memory used by system:\t" << physicalMemPercent << "\n\t"
-             << "Instructions / Time Slice:\t" << timeSlice << "\n";
+            << "associativity:\t\t\t" << associativity << "\n\t" << "replacement policy:\t\t" << replacement << "\n\t"
+            << "Physical Memory:\t\t" << physicalMem << " MB\n\t" << "Percent memory used by system:\t" << physicalMemPercent << "\n\t"
+            << "Instructions / Time Slice:\t" << timeSlice << "\n";
+
+        //int totalBytes = cachePower / blockSize;
+
+        //gives total blocks
+        int returnCache = cacheValue(cacheSize);
+        //cout << "\n cache size: " << returnCache;
+        int cacheToBlocks = returnCache / blockSize;
+       // cout << "\n" << cacheToBlocks;
+
+        //block offset
+        int blockOffsetbits = log2(blockSize);
+        //cout << "\n" << blockOffsetbits;
+
+        int index = returnCache / (blockSize * associativity);
+        int indexBits = log2(index);
+       // cout << "\n" << indexBits;
+
+        int tagBits = 32 - blockOffsetbits - indexBits;
+        //cout << "\n" << tagBits;
+
+        int totalRows = pow(2, indexBits);
+        // cout << "\n" << totalRows;
+
+        int overhead = ((1 + tagBits) * cacheToBlocks) / 8;
+        // cout << "\n" << overhead;
+
+        //int overhead = ((cacheToBlocks * tagBits) + cacheToBlocks) / 8;
+        int implementation = (cacheToBlocks * blockSize) + overhead;
+
+        //int implementationBytes = implementation / 1024;
+        // cout << "\n" << implementation;
+
+        double implementKB = implementation / 1024;
+
+        // cout << "\n" << fixed << setprecision(2) << implementKB;
+
+        double totalCosts = implementKB * 0.15;
+
+        //cout << "\n" << totalCosts;
+
+        cout << "\n***** cache calculated values *****\n\t";
+        cout << "Total # Blocks:\t\t\t" << cacheToBlocks << " KB\n\t" << "Tag Size:\t\t\t" << tagBits << " Bytes\n\t"
+             << "Index Size:\t\t\t" << indexBits << "\n\t" << "Total # rows:\t\t\t" << totalRows << "\n\t"
+             << "Overhead Size:\t\t\t" << overhead << " MB\n\t" << "Implementation Memory Size:\t" << implementKB << "KB (" <<  implementation << " bytes)\n\t"
+             << "cost:\t\t\t\t" << totalCosts << " @ 0.15 / KB\n";
+
+        double pages= (physicalMem * 1024) / 4;
+        int systemPages = (pages * physicalMemPercent) / 100;
+        int pageSize = 19;
+        int ramForPages = systemPages * pageSize;
+
+        cout << "\n***** Physical Memory calculated values *****\n\t";
+        cout << "Number of Physical Pages:\t\t\t" << pages << "\n\t" << "Number of pages for system:\t\t\t" << systemPages << "\n\t"
+            << "size of page table entry:\t\t\t" << pageSize << "\n\t" << "Total RAM for Page Table(s):\t\t\t" << ramForPages << " Bytes\n\t";
 
         return false;
 
     }
+
+    return 0;
 
 }
 
